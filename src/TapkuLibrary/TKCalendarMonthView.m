@@ -294,11 +294,16 @@
 		[self changeMonthAnimation:b];
 		
 		int day = [[ar objectAtIndex:0] intValue];
-		[currentTile selectDay:day];
 	
+		TKDateInformation info = [[currentTile monthDate] dateInformation];
+		info.day = day;
+		NSDate *dateForMonth = [NSDate  dateFromDateInformation:info]; 
+		[currentTile selectDay:day];
 		
 		if([delegate respondsToSelector:@selector(calendarMonthView:monthDidChange:)])
-			[delegate calendarMonthView:self monthDidChange:currentTile.monthDate];
+			[delegate calendarMonthView:self monthDidChange:dateForMonth];
+		
+
 
 		
 	}
