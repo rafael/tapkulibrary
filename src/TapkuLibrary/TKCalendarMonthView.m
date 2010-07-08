@@ -126,7 +126,7 @@
 	NSDate *date = [NSDate date];
 	self.monthYear.text = [NSString stringWithFormat:@"%@ %@",[date month],[date year]];
 	[self addSubview:self.monthYear];
-	
+	[self drawDayLabels];
 	
 	[self addSubview:self.leftArrow];
 	[self addSubview:self.rightArrow];
@@ -137,6 +137,38 @@
 	self.backgroundColor = [UIColor grayColor];
 	
 	return self;
+}
+
+
+
+- (void) drawDayLabels{
+	
+	
+	// Calendar starting on Monday instead of Sunday (Australia, Europe agains US american calendar)
+	NSArray *days;
+	CFCalendarRef currentCalendar = CFCalendarCopyCurrent();
+	if (CFCalendarGetFirstWeekday(currentCalendar) == 2) 
+		days = [NSArray arrayWithObjects:@"Mon",@"Tue",@"Wed",@"Thu",@"Fri",@"Sat",@"Sun",nil];
+	else 
+		days = [NSArray arrayWithObjects:@"Sun",@"Mon",@"Tue",@"Wed",@"Thu",@"Fri",@"Sat",nil];
+	CFRelease(currentCalendar); 
+	UIFont *f = [UIFont boldSystemFontOfSize:10];
+	
+	
+	int i = 0;
+	for(NSString *str in days){
+		UILabel *dayLabel = [[UILabel alloc] initWithFrame:CGRectMake(i * 46, 44-11, 45, 10)];
+		dayLabel.text = str;
+		dayLabel.font = f;
+		dayLabel.lineBreakMode = UILineBreakModeWordWrap;
+		dayLabel.textAlignment = UITextAlignmentCenter;
+		dayLabel.textColor = [UIColor darkGrayColor];
+		dayLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:dayLabel];
+		i++;
+		[dayLabel release];
+	}
+
 }
 
 - (void) changeMonthAnimation:(UIView*)sender{
@@ -211,7 +243,7 @@
 }
 
 - (void) changeMonth:(UIButton *)sender{
-	
+
 	[self changeMonthAnimation:sender];
 	if([delegate respondsToSelector:@selector(calendarMonthView:monthDidChange:)])
 		[delegate calendarMonthView:self monthDidChange:currentTile.monthDate];
@@ -266,7 +298,7 @@
 	
 	TKCalendarMonthTiles *refresh = [[[TKCalendarMonthTiles alloc] initWithMonth:[currentTile monthDate] marks:ar startDayOnSunday:YES] autorelease];
 	[refresh setTarget:self action:@selector(tile:)];
-	
+
 	[self.tileBox addSubview:refresh];
 	[currentTile removeFromSuperview];
 	[currentTile release];
@@ -294,16 +326,14 @@
 		[self changeMonthAnimation:b];
 		
 		int day = [[ar objectAtIndex:0] intValue];
-	
 		TKDateInformation info = [[currentTile monthDate] dateInformation];
 		info.day = day;
 		NSDate *dateForMonth = [NSDate  dateFromDateInformation:info]; 
+		
 		[currentTile selectDay:day];
 		
 		if([delegate respondsToSelector:@selector(calendarMonthView:monthDidChange:)])
 			[delegate calendarMonthView:self monthDidChange:dateForMonth];
-		
-
 
 		
 	}
@@ -319,10 +349,11 @@
 }
 - (UILabel *) monthYear{
 	if(monthYear==nil){
-		monthYear = [[UILabel alloc] initWithFrame:CGRectInset(self.topBackground.bounds,40, 8)];
+		monthYear = [[UILabel alloc] initWithFrame:CGRectMake(75, 6, 170, 24)];
+		//monthYear = [[UILabel alloc] initWithFrame:CGRectInset(self.topBackground.bounds,40, 8)];
 		monthYear.textAlignment = UITextAlignmentCenter;
 		monthYear.backgroundColor = [UIColor clearColor];
-		monthYear.font = [UIFont boldSystemFontOfSize:22];
+		monthYear.font = [UIFont boldSystemFontOfSize:20];
 		monthYear.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
 	}
 	return monthYear;

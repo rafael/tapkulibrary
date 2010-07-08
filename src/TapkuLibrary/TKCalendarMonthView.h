@@ -58,6 +58,7 @@
 - (NSDate*) monthDate;
 - (void) selectDate:(NSDate*)date;
 - (void) reload;
+- (void) drawDayLabels;
 
 @end
 
